@@ -1,0 +1,147 @@
+#!/bin/bash
+
+VERSION=$1
+DEBUG=$2
+ZTS=$3
+THIRTYTWO=$4
+POSTFIX=
+EXTRA_FLAGS=
+export -n PHP_AUTOCONF
+
+if (test "${DEBUG}" = "nodebug"); then
+	POSTFIX="$POSTFIX-nodebug"
+else
+	EXTRA_FLAGS="$EXTRA_FLAGS --enable-debug"
+fi
+
+if (test "${ZTS}" = "zts"); then
+	EXTRA_FLAGS="$EXTRA_FLAGS --enable-maintainer-zts"
+	POSTFIX="$POSTFIX-zts"
+fi
+
+sudo apt install -y make autoconf gcc bison locate vim pkg-config libbz2-dev libjpeg-dev g++ libreadline-dev libmcrypt-dev re2c libsqlite3-dev
+
+SCRUBBED=`echo $VERSION | sed 's/[0-9.]*//'`
+NUMBERS=`echo $VERSION | sed -r 's/[^0-9.]+//'`
+MINI_VERSION=`echo $VERSION | sed 's/^\([0-9]\.[0-9]\).*/\1/'`
+echo $NUMBERS
+echo $MINI_VERSION
+
+if (test "${THIRTYTWO}" = "32bit"); then
+	export CFLAGS="-m32"
+	POSTFIX="$POSTFIX-32bit"
+	export PKG_CONFIG_PATH="/usr/lib/i386-linux-gnu/pkgconfig"
+	sudo apt install -y libxml2-dev:i386 libicu-dev:i386 libz-dev:i386 libssl-dev:i386 libssl1.1:i386 libssl1.0.2:i386 libxslt1-dev:i386 libsasl2-dev:i386 libonig-dev:i386
+else
+	sudo apt install -y libxml2-dev libpng-dev libicu-dev libz-dev libssl-dev libssl1.1 libssl1.0.2 libxslt1-dev libsasl2-dev libonig-dev
+
+	if (test "${MINI_VERSION}" = "5.6"); then
+		sudo apt install -y libssl1.0-dev
+	fi
+fi
+
+if (test "${SCRUBBED}" = "master"); then
+	PHP_DIR=/home/derick/dev/php/php-src-git/master
+	BRANCH=master
+
+	cd /home/derick/dev/php/php-src.git
+	git checkout ${BRANCH} || exit 5
+else
+	if (test "${SCRUBBED}" = "dev"); then
+		BRANCH=`echo ${VERSION} | sed 's/dev//'`
+		BRANCH=PHP-${BRANCH}
+
+		cd /home/derick/dev/php/php-src.git
+		git checkout ${BRANCH} || exit 5
+	else
+		TAG=`echo ${VERSION}`
+		BRANCH=php-${TAG}
+
+		BUILDDIR="/tmp/php-build-cache/tmp-${VERSION}${POSTFIX}"
+		rm -rf "${BUILDDIR}/php-${VERSION}"
+		mkdir -p ${BUILDDIR}
+		cd ${BUILDDIR}
+
+		if [[ ! -s /tmp/php-build-cache/php-${VERSION}.tar.bz2 ]]; then
+			if (test "${MINI_VERSION}" = "5.3"); then
+				wget http://museum.php.net/php5/php-${VERSION}.tar.bz2 -O /tmp/php-build-cache/php-${VERSION}.tar.bz2
+			elif (test "${MINI_VERSION}" = "5.4"); then
+				wget http://museum.php.net/php5/php-${VERSION}.tar.bz2 -O /tmp/php-build-cache/php-${VERSION}.tar.bz2
+			elif (test "${MINI_VERSION}" = "5.5"); then
+				wget http://museum.php.net/php5/php-${VERSION}.tar.bz2 -O /tmp/php-build-cache/php-${VERSION}.tar.bz2
+		#	elif (test "${MINI_VERSION}" = "5.6"); then
+		#		wget http://museum.php.net/php5/php-${VERSION}.tar.bz2 -O /tmp/php-build-cache/php-${VERSION}.tar.bz2
+			else
+				wget http://uk1.php.net/distributions/php-${VERSION}.tar.bz2 -O /tmp/php-build-cache/php-${VERSION}.tar.bz2
+			fi
+		fi
+
+		tar -xjf /tmp/php-build-cache/php-${VERSION}.tar.bz2
+		cd php-${VERSION}
+
+		if [[ -f /home/derick/dev/php/patches/${MINI_VERSION}.diff.txt ]]; then
+			echo "Patching for ${MINI_VERSION}"
+			patch -p0 < /home/derick/dev/php/patches/${MINI_VERSION}.diff.txt
+		fi
+	fi
+fi
+
+echo "Building ${VERSION}${POSTFIX} with ($EXTRA_FLAGS)"
+
+if (test "${THIRTYTWO}" = "32bit"); then
+	OPTIONS="--disable-all --with-pear --with-iconv --enable-posix --with-posix --enable-spl \
+		--enable-tokenizer --enable-phar --with-phar --enable-json --enable-sockets \
+		--with-zlib --enable-filter --with-openssl --enable-hash --enable-opcache \
+		--with-libxml --enable-xml --enable-dom --enable-mbstring --enable-pdo --enable-xmlwriter"
+else
+	OPTIONS="--with-gettext --with-gd --with-jpeg-dir=/usr --without-freetype-dir \
+		--with-mysql=mysqlnd --enable-bcmath --with-readline \
+		--with-openssl --without-esmtp --with-curl \
+		--with-mysqli --enable-pcntl --enable-sockets \
+		--enable-memory-limit --with-mcrypt --with-libxml \
+		--with-iconv --enable-wddx --enable-calendar \
+		--enable-spl --enable-pdo --with-pdo-mysql --with-pdo-sqlite \
+		--with-ctype --with-bz2 --enable-mbstring --with-mime-magic \
+		--with-xmlrpc --with-zlib --disable-zend-memory-manager --with-esmtp \
+		--with-xsl --enable-exif --enable-soap --enable-ftp --enable-intl --enable-opcache\
+		--enable-fpm"
+	if (test "${MINI_VERSION}" = "5.3"); then
+		export PHP_AUTOCONF=autoconf2.59
+		OPTIONS="$OPTIONS --without-openssl \
+			--without-xmlrpc --disable-dom --without-xsl --disable-wddx --disable-simplexml --disable-soap --without-curl \
+			--enable-xml --disable-xmlreader --disable-xmlwriter --disable-intl --without-mysqli --without-mysql --without-pdo-mysql"
+	fi
+	if (test "${MINI_VERSION}" = "5.4"); then
+		OPTIONS="$OPTIONS --without-openssl"
+	fi
+fi
+OPTIONS="$OPTIONS --with-pear"
+
+set +x
+
+make clean
+rm -rf configure
+./vcsclean
+./buildconf --force
+
+./configure --prefix=/usr/local/php/${VERSION}${POSTFIX} ${EXTRA_FLAGS} ${OPTIONS} || exit 5
+
+make
+make install
+
+if (test "${MINI_VERSION}" = "5.3"); then
+	ln -fs /home/derick/php.53.default.ini /usr/local/php/${VERSION}${POSTFIX}/lib/php.ini
+elif (test "${MINI_VERSION}" = "5.4"); then
+	ln -fs /home/derick/php.54.default.ini /usr/local/php/${VERSION}${POSTFIX}/lib/php.ini
+elif (test "${MINI_VERSION}" = "5.5"); then
+	ln -fs /home/derick/php.55.default.ini /usr/local/php/${VERSION}${POSTFIX}/lib/php.ini
+elif (test "${MINI_VERSION}" = "5.6"); then
+	ln -fs /home/derick/php.56.default.ini /usr/local/php/${VERSION}${POSTFIX}/lib/php.ini
+else
+	ln -fs /home/derick/php.default.ini /usr/local/php/${VERSION}${POSTFIX}/lib/php.ini
+fi
+
+/usr/local/php/${VERSION}${POSTFIX}/bin/pecl install mongodb
+/usr/local/php/${VERSION}${POSTFIX}/bin/pecl install xdebug
+/usr/local/php/${VERSION}${POSTFIX}/bin/pecl install vld-beta
+
