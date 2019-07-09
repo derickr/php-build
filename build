@@ -1,5 +1,36 @@
 #!/bin/bash
 
+# Figuring out where we are
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+
+# Setting directories
+PATCHES_DIR=$DIR/patches
+TARGET_PREFIX_DIR=/usr/local/php
+
+# If first argument is an existing directory, use it as GIT checkout directory
+if [[ -d $1 ]]; then
+	GIT_DIR=$1
+	shift
+
+	# If the next argument is also a directory, use it as target install directory
+	if [[ -d $1 ]]; then
+		TARGET_PREFIX_DIR=$1
+		shift
+	fi
+else
+	GIT_DIR=/home/derick/dev/php/php-src.git
+fi
+
+echo ${GIT_DIR}
+echo ${TARGET_PREFIX_DIR}
+
+# Parsing arguments
 VERSION=$1
 DEBUG=$2
 ZTS=$3
@@ -8,6 +39,7 @@ POSTFIX=
 EXTRA_FLAGS=
 export -n PHP_AUTOCONF
 
+# Calculating postfix and extra flags
 if (test "${DEBUG}" = "nodebug"); then
 	POSTFIX="$POSTFIX-nodebug"
 else
@@ -19,13 +51,15 @@ if (test "${ZTS}" = "zts"); then
 	POSTFIX="$POSTFIX-zts"
 fi
 
-sudo apt install -y make autoconf gcc bison locate vim pkg-config libbz2-dev libjpeg-dev g++ libreadline-dev libmcrypt-dev re2c libsqlite3-dev
-
+# Figuring out which branch we are on
 SCRUBBED=`echo $VERSION | sed 's/[0-9.]*//'`
 NUMBERS=`echo $VERSION | sed -r 's/[^0-9.]+//'`
 MINI_VERSION=`echo $VERSION | sed 's/^\([0-9]\.[0-9]\).*/\1/'`
 echo $NUMBERS
 echo $MINI_VERSION
+
+# Installing required packages
+sudo apt install -y make autoconf gcc bison locate vim pkg-config libbz2-dev libjpeg-dev g++ libreadline-dev libmcrypt-dev re2c libsqlite3-dev
 
 if (test "${THIRTYTWO}" = "32bit"); then
 	export CFLAGS="-m32"
@@ -41,17 +75,16 @@ else
 fi
 
 if (test "${SCRUBBED}" = "master"); then
-	PHP_DIR=/home/derick/dev/php/php-src-git/master
 	BRANCH=master
 
-	cd /home/derick/dev/php/php-src.git
+	cd $GIT_DIR
 	git checkout ${BRANCH} || exit 5
 else
 	if (test "${SCRUBBED}" = "dev"); then
 		BRANCH=`echo ${VERSION} | sed 's/dev//'`
 		BRANCH=PHP-${BRANCH}
 
-		cd /home/derick/dev/php/php-src.git
+		cd $GIT_DIR
 		git checkout ${BRANCH} || exit 5
 	else
 		TAG=`echo ${VERSION}`
@@ -79,7 +112,7 @@ else
 		tar -xjf /tmp/php-build-cache/php-${VERSION}.tar.bz2
 		cd php-${VERSION}
 
-		if [[ -f /home/derick/dev/php/patches/${MINI_VERSION}.diff.txt ]]; then
+		if [[ -f ${PATCHES_DIR}/${MINI_VERSION}.diff.txt ]]; then
 			echo "Patching for ${MINI_VERSION}"
 			patch -p0 < /home/derick/dev/php/patches/${MINI_VERSION}.diff.txt
 		fi
@@ -92,13 +125,13 @@ if (test "${THIRTYTWO}" = "32bit"); then
 	OPTIONS="--disable-all --with-pear --with-iconv --enable-posix --with-posix --enable-spl \
 		--enable-tokenizer --enable-phar --with-phar --enable-json --enable-sockets \
 		--with-zlib --enable-filter --with-openssl --enable-hash --enable-opcache \
-		--with-libxml --enable-xml --enable-dom --enable-mbstring --enable-pdo --enable-xmlwriter"
+		--with-libxml --enable-libxml --enable-xml --enable-dom --enable-mbstring --enable-pdo --enable-xmlwriter"
 else
 	OPTIONS="--with-gettext --with-gd --with-jpeg-dir=/usr --without-freetype-dir \
 		--with-mysql=mysqlnd --enable-bcmath --with-readline \
 		--with-openssl --without-esmtp --with-curl \
 		--with-mysqli --enable-pcntl --enable-sockets \
-		--enable-memory-limit --with-mcrypt --with-libxml \
+		--enable-memory-limit --with-mcrypt --with-libxml --enable-libxml \
 		--with-iconv --enable-wddx --enable-calendar \
 		--enable-spl --enable-pdo --with-pdo-mysql --with-pdo-sqlite \
 		--with-ctype --with-bz2 --enable-mbstring --with-mime-magic \
@@ -124,24 +157,19 @@ rm -rf configure
 ./vcsclean
 ./buildconf --force
 
-./configure --prefix=/usr/local/php/${VERSION}${POSTFIX} ${EXTRA_FLAGS} ${OPTIONS} || exit 5
+./configure --prefix=${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX} ${EXTRA_FLAGS} ${OPTIONS} || exit 5
 
 make
 make install
 
 if (test "${MINI_VERSION}" = "5.3"); then
-	ln -fs /home/derick/php.53.default.ini /usr/local/php/${VERSION}${POSTFIX}/lib/php.ini
+	ln -fs /home/derick/php.53.default.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/php.ini
 elif (test "${MINI_VERSION}" = "5.4"); then
-	ln -fs /home/derick/php.54.default.ini /usr/local/php/${VERSION}${POSTFIX}/lib/php.ini
+	ln -fs /home/derick/php.54.default.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/php.ini
 elif (test "${MINI_VERSION}" = "5.5"); then
-	ln -fs /home/derick/php.55.default.ini /usr/local/php/${VERSION}${POSTFIX}/lib/php.ini
+	ln -fs /home/derick/php.55.default.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/php.ini
 elif (test "${MINI_VERSION}" = "5.6"); then
-	ln -fs /home/derick/php.56.default.ini /usr/local/php/${VERSION}${POSTFIX}/lib/php.ini
+	ln -fs /home/derick/php.56.default.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/php.ini
 else
-	ln -fs /home/derick/php.default.ini /usr/local/php/${VERSION}${POSTFIX}/lib/php.ini
+	ln -fs /home/derick/php.default.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/php.ini
 fi
-
-/usr/local/php/${VERSION}${POSTFIX}/bin/pecl install mongodb
-/usr/local/php/${VERSION}${POSTFIX}/bin/pecl install xdebug
-/usr/local/php/${VERSION}${POSTFIX}/bin/pecl install vld-beta
-
