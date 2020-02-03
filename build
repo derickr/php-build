@@ -47,7 +47,7 @@ else
 fi
 
 if (test "${ZTS}" = "zts"); then
-	EXTRA_FLAGS="$EXTRA_FLAGS --enable-maintainer-zts"
+	EXTRA_FLAGS="$EXTRA_FLAGS --enable-maintainer-zts --enable-zts"
 	POSTFIX="$POSTFIX-zts"
 fi
 
@@ -153,6 +153,7 @@ OPTIONS="$OPTIONS --with-pear"
 set +x
 
 make clean
+rm ext/opcache/jit/zend_jit_x86.c
 rm -rf configure
 ./vcsclean
 ./buildconf --force
