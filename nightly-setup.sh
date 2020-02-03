@@ -5,7 +5,7 @@ TREES=${WORKSPACE}/trees
 
 mkdir -p ${TREES}
 
-for i in PHP-7.4 master; do
+for i in PHP-7.2 PHP-7.3 PHP-7.4 master; do
 	git clone https://github.com/php/php-src.git ${TREES}/nightly-$i
 	cd ${TREES}/nightly-$i
 	git checkout $i

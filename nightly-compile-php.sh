@@ -23,9 +23,18 @@ mkdir -p ${LOGS}/${DATE}
 
 date
 echo Start
-for i in 7.4dev master; do
+for i in 7.2dev 7.3dev 7.4dev master; do
 	GIT_DIR=${TREES}/nightly-${i}
 	TARGET_DIR=${INSTALL_DIR}
+
+	if [ ! -d ${GIT_DIR} ]; then
+		git clone https://github.com/php/php-src.git ${GIT_DIR}
+		cd ${GIT_DIR}
+		if [ "$i" != "master" ]; then
+			BRANCH=`echo $i | sed 's/\([0-9]\)\.\([0-9]\)dev/PHP-\1.\2/'`
+			git checkout ${BRANCH}
+		fi
+	fi
 
 	date
 	echo Cleaning for $i

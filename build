@@ -127,9 +127,9 @@ if (test "${THIRTYTWO}" = "32bit"); then
 		--with-zlib --enable-filter --with-openssl --enable-hash --enable-opcache \
 		--with-libxml --enable-libxml --enable-xml --enable-dom --enable-mbstring --enable-pdo --enable-xmlwriter"
 else
-	OPTIONS="--with-gettext --with-gd --with-jpeg-dir=/usr --without-freetype-dir \
+	OPTIONS="--with-gettext --with-gd --enable-gd --with-jpeg --without-freetype --with-jpeg-dir=/usr --without-freetype-dir \
 		--with-mysql=mysqlnd --enable-bcmath --with-readline \
-		--with-openssl --without-esmtp --with-curl \
+		--with-openssl --without-esmtp --with-curl --with-sodium --with-ffi \
 		--with-mysqli --enable-pcntl --enable-sockets \
 		--enable-memory-limit --with-mcrypt --with-libxml --enable-libxml \
 		--with-iconv --enable-wddx --enable-calendar \
