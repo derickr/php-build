@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Run as:
+# VERSION=$1 DEBUG=$2 ZTS=$3 THIRTYTWO=$4 POSTFIX= EXTRA_FLAGS=
+
 # Figuring out where we are
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -126,6 +129,12 @@ if (test "${THIRTYTWO}" = "32bit"); then
 		--enable-tokenizer --enable-phar --with-phar --enable-json --enable-sockets \
 		--with-zlib --enable-filter --with-openssl --enable-hash --enable-opcache \
 		--with-libxml --enable-libxml --enable-xml --enable-dom --enable-mbstring --enable-pdo --enable-xmlwriter"
+	if (test "${MINI_VERSION}" = "5.5"); then
+		OPTIONS="$OPTIONS --without-curl --without-openssl"
+	fi
+	if (test "${MINI_VERSION}" = "5.6"); then
+		OPTIONS="$OPTIONS --without-curl --without-openssl"
+	fi
 else
 	OPTIONS="--with-gettext --with-gd --enable-gd --with-jpeg --without-freetype --with-jpeg-dir=/usr --without-freetype-dir \
 		--with-mysql=mysqlnd --enable-bcmath --with-readline \
@@ -145,7 +154,10 @@ else
 			--enable-xml --disable-xmlreader --disable-xmlwriter --disable-intl --without-mysqli --without-mysql --without-pdo-mysql"
 	fi
 	if (test "${MINI_VERSION}" = "5.4"); then
-		OPTIONS="$OPTIONS --without-openssl"
+		OPTIONS="$OPTIONS --without-curl --without-openssl"
+	fi
+	if (test "${MINI_VERSION}" = "5.5"); then
+		OPTIONS="$OPTIONS --without-curl --without-openssl"
 	fi
 fi
 OPTIONS="$OPTIONS --with-pear"
