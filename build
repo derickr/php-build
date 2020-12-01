@@ -79,6 +79,8 @@ if (test "${SCRUBBED}" = "master"); then
 	BRANCH=master
 
 	cd $GIT_DIR
+	git stash
+
 	git checkout ${BRANCH} || exit 5
 else
 	if (test "${SCRUBBED}" = "dev"); then
@@ -86,6 +88,10 @@ else
 		BRANCH=PHP-${BRANCH}
 
 		cd $GIT_DIR
+		
+		rm Zend/zend_ini_scanner.c Zend/zend_ini_scanner_defs.h ext/mbstring/oniguruma/oniguruma.h
+
+		git stash
 		git checkout ${BRANCH} || exit 5
 	else
 		TAG=`echo ${VERSION}`
@@ -171,7 +177,7 @@ rm -rf configure
 ./configure --prefix=${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX} ${EXTRA_FLAGS} ${OPTIONS} || exit 5
 
 make
-make install
+make -j1 install
 
 if (test "${MINI_VERSION}" = "5.3"); then
 	ln -fs /home/derick/php.53.default.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/php.ini
