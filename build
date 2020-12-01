@@ -68,13 +68,11 @@ if (test "${THIRTYTWO}" = "32bit"); then
 	export CFLAGS="-m32"
 	POSTFIX="$POSTFIX-32bit"
 	export PKG_CONFIG_PATH="/usr/lib/i386-linux-gnu/pkgconfig"
-	sudo apt install -y libxml2-dev:i386 libicu-dev:i386 libz-dev:i386 libssl-dev:i386 libssl1.1:i386 libssl1.0.2:i386 libxslt1-dev:i386 libsasl2-dev:i386 libonig-dev:i386
+	sudo apt install -y libxml2-dev:i386 libicu-dev:i386 libz-dev:i386 libssl-dev:i386 libssl1.1:i386 libssl1.0.2:i386 libxslt1-dev:i386 libsasl2-dev:i386 libonig-dev:i386 libsqlite3-dev:i386
+	sudo apt remove -y libsqlite3-dev:amd64
 else
-	sudo apt install -y libxml2-dev libpng-dev libicu-dev libz-dev libssl-dev libssl1.1 libssl1.0.2 libxslt1-dev libsasl2-dev libonig-dev
-
-	if (test "${MINI_VERSION}" = "5.6"); then
-		sudo apt install -y libssl1.0-dev
-	fi
+	sudo apt install -y libxml2-dev libpng-dev libicu-dev libz-dev libssl-dev libssl1.1 libssl1.0.2 libxslt1-dev libsasl2-dev libonig-dev libsqlite3-dev:amd64
+	sudo apt remove -y libsqlite3-dev:i386
 fi
 
 if (test "${SCRUBBED}" = "master"); then
