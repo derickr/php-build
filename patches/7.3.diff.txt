@@ -1,0 +1,25 @@
+diff --git Zend/zend_language_parser.y Zend/zend_language_parser.y
+index 95823ae750..25f45b8988 100644
+--- Zend/zend_language_parser.y
++++ Zend/zend_language_parser.y
+@@ -44,6 +44,7 @@ static YYSIZE_T zend_yytnamerr(char*, const char*);
+ 
+ %pure-parser
+ %expect 0
++%define parse.error verbose
+ 
+ %code requires {
+ }
+diff --git acinclude.m4 acinclude.m4
+index 45e1af0e66..13446b374e 100644
+--- acinclude.m4
++++ acinclude.m4
+@@ -2123,7 +2123,7 @@ dnl
+ dnl Search for bison and check it's version
+ dnl
+ AC_DEFUN([PHP_PROG_BISON], [
+-  AC_PROG_YACC
++  AC_CHECK_PROG(YACC, bison, bison)
+   LIBZEND_BISON_CHECK
+   PHP_SUBST(YACC)
+ ])

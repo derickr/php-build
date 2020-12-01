@@ -93,6 +93,12 @@ else
 
 		git stash
 		git checkout ${BRANCH} || exit 5
+		git clean -f
+
+		if [[ -f ${PATCHES_DIR}/${MINI_VERSION}.diff.txt ]]; then
+			echo "Patching for ${MINI_VERSION}"
+			patch -p0 < /home/derick/dev/php/build-php/patches/${MINI_VERSION}.diff.txt
+		fi
 	else
 		TAG=`echo ${VERSION}`
 		BRANCH=php-${TAG}
@@ -121,7 +127,7 @@ else
 
 		if [[ -f ${PATCHES_DIR}/${MINI_VERSION}.diff.txt ]]; then
 			echo "Patching for ${MINI_VERSION}"
-			patch -p0 < /home/derick/dev/php/patches/${MINI_VERSION}.diff.txt
+			patch -p0 < /home/derick/dev/php/build-php/patches/${MINI_VERSION}.diff.txt
 		fi
 	fi
 fi
