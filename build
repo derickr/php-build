@@ -136,22 +136,29 @@ echo "Building ${VERSION}${POSTFIX} with ($EXTRA_FLAGS)"
 
 if (test "${THIRTYTWO}" = "32bit"); then
 	OPTIONS="--disable-all --with-pear --with-iconv --enable-posix --with-posix --enable-spl \
-		--enable-tokenizer --enable-phar --with-phar --enable-json --enable-sockets \
-		--with-zlib --enable-filter --with-openssl --enable-hash --enable-opcache \
-		--with-libxml --enable-libxml --enable-xml --enable-dom --enable-mbstring --enable-pdo --enable-xmlwriter"
+		--enable-tokenizer --enable-phar --with-phar --enable-json --enable-sockets --with-sqlite3 \
+		--with-zlib --enable-filter --with-openssl --enable-hash --enable-opcache --enable-session --enable-ctype \
+		--with-libxml --enable-libxml --enable-xml --enable-dom --enable-mbstring --enable-pdo --with-pdo-sqlite --enable-xmlwriter"
+	if (test "${MINI_VERSION}" = "5.3"); then
+		export PHP_AUTOCONF=autoconf2.59
+		OPTIONS="$OPTIONS --without-curl --without-openssl"
+	fi
+	if (test "${MINI_VERSION}" = "5.4"); then
+		OPTIONS="$OPTIONS --without-curl --without-openssl"
+	fi
 	if (test "${MINI_VERSION}" = "5.5"); then
 		OPTIONS="$OPTIONS --without-curl --without-openssl"
 	fi
 	if (test "${MINI_VERSION}" = "5.6"); then
-		OPTIONS="$OPTIONS --without-curl --without-openssl"
+		OPTIONS="$OPTIONS --without-curl"
 	fi
 else
 	OPTIONS="--with-gettext --with-gd --enable-gd --with-jpeg --without-freetype --with-jpeg-dir=/usr --without-freetype-dir \
 		--with-mysql=mysqlnd --enable-bcmath --with-readline \
 		--with-openssl --without-esmtp --with-curl --with-sodium --with-ffi \
-		--with-mysqli --enable-pcntl --enable-sockets \
+		--with-mysqli --enable-pcntl --enable-sockets --enable-zip --with-zip \
 		--enable-memory-limit --with-mcrypt --with-libxml --enable-libxml \
-		--with-iconv --enable-wddx --enable-calendar \
+		--with-iconv --enable-wddx --enable-calendar --with-sqlite3 \
 		--enable-spl --enable-pdo --with-pdo-mysql --with-pdo-sqlite \
 		--with-ctype --with-bz2 --enable-mbstring --with-mime-magic \
 		--with-xmlrpc --with-zlib --disable-zend-memory-manager --with-esmtp \
@@ -159,15 +166,21 @@ else
 		--enable-fpm"
 	if (test "${MINI_VERSION}" = "5.3"); then
 		export PHP_AUTOCONF=autoconf2.59
-		OPTIONS="$OPTIONS --without-openssl \
+		OPTIONS="$OPTIONS --with-openssl=/home/derick/dev/11-instana/old \
 			--without-xmlrpc --disable-dom --without-xsl --disable-wddx --disable-simplexml --disable-soap --without-curl \
 			--enable-xml --disable-xmlreader --disable-xmlwriter --disable-intl --without-mysqli --without-mysql --without-pdo-mysql"
 	fi
 	if (test "${MINI_VERSION}" = "5.4"); then
-		OPTIONS="$OPTIONS --without-curl --without-openssl"
+		OPTIONS="$OPTIONS --without-curl --with-openssl=/home/derick/dev/11-instana/old --disable-intl"
 	fi
 	if (test "${MINI_VERSION}" = "5.5"); then
-		OPTIONS="$OPTIONS --without-curl --without-openssl"
+		OPTIONS="$OPTIONS --without-curl --with-openssl=/home/derick/dev/11-instana/old --disable-intl"
+	fi
+	if (test "${MINI_VERSION}" = "5.6"); then
+		OPTIONS="$OPTIONS --without-curl --with-openssl=/home/derick/dev/11-instana/old --disable-intl"
+	fi
+	if (test "${MINI_VERSION}" = "7.0"); then
+		OPTIONS="$OPTIONS --disable-intl"
 	fi
 fi
 OPTIONS="$OPTIONS --with-pear"
