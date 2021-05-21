@@ -135,7 +135,7 @@ fi
 echo "Building ${VERSION}${POSTFIX} with ($EXTRA_FLAGS)"
 
 if (test "${THIRTYTWO}" = "32bit"); then
-	OPTIONS="--disable-all --with-pear --with-iconv --enable-posix --with-posix --enable-spl \
+	OPTIONS="--build=i686-pc-linux-gnu --disable-all --with-pear --with-iconv --enable-posix --with-posix --enable-spl \
 		--enable-tokenizer --enable-phar --with-phar --enable-json --enable-sockets --with-sqlite3 \
 		--with-zlib --enable-filter --with-openssl --enable-hash --enable-opcache --enable-session --enable-ctype \
 		--with-libxml --enable-libxml --enable-xml --enable-dom --enable-mbstring --enable-pdo --with-pdo-sqlite --enable-xmlwriter"
