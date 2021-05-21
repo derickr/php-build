@@ -153,7 +153,7 @@ if (test "${THIRTYTWO}" = "32bit"); then
 		OPTIONS="$OPTIONS --without-curl"
 	fi
 else
-	OPTIONS="--with-gettext --with-gd --enable-gd --with-jpeg --without-freetype --with-jpeg-dir=/usr --without-freetype-dir \
+	OPTIONS="--with-gettext --with-gd --enable-gd --with-jpeg --with-freetype --with-jpeg-dir=/usr \
 		--with-mysql=mysqlnd --enable-bcmath --with-readline \
 		--with-openssl --without-esmtp --with-curl --with-sodium --with-ffi \
 		--with-mysqli --enable-pcntl --enable-sockets --enable-zip --with-zip \
@@ -163,7 +163,7 @@ else
 		--with-ctype --with-bz2 --enable-mbstring --with-mime-magic \
 		--with-xmlrpc --with-zlib --disable-zend-memory-manager --with-esmtp \
 		--with-xsl --enable-exif --enable-soap --enable-ftp --enable-intl --enable-opcache\
-		--enable-fpm"
+		--enable-fpm --enable-fileinfo"
 	if (test "${MINI_VERSION}" = "5.3"); then
 		export PHP_AUTOCONF=autoconf2.59
 		OPTIONS="$OPTIONS --with-openssl=/home/derick/dev/11-instana/old \
