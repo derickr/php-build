@@ -168,7 +168,7 @@ else
 		export PHP_AUTOCONF=autoconf2.59
 		OPTIONS="$OPTIONS --with-openssl=/home/derick/dev/11-instana/old \
 			--without-xmlrpc --disable-dom --without-xsl --disable-wddx --disable-simplexml --disable-soap --without-curl \
-			--enable-xml --disable-xmlreader --disable-xmlwriter --disable-intl --without-mysqli --without-mysql --without-pdo-mysql"
+			--enable-xml --disable-xmlreader --disable-xmlwriter --disable-intl --without-mysqli --without-pdo-mysql"
 	fi
 	if (test "${MINI_VERSION}" = "5.4"); then
 		OPTIONS="$OPTIONS --without-curl --with-openssl=/home/derick/dev/11-instana/old --disable-intl"
@@ -182,8 +182,14 @@ else
 	if (test "${MINI_VERSION}" = "7.0"); then
 		OPTIONS="$OPTIONS --disable-intl"
 	fi
+	if (test "${MINI_VERSION}" = "7.1"); then
+		OPTIONS="$OPTIONS --disable-intl"
+	fi
+	if (test "${MINI_VERSION}" = "7.2"); then
+		OPTIONS="$OPTIONS --disable-intl"
+	fi
 fi
-OPTIONS="$OPTIONS --with-pear"
+OPTIONS="$OPTIONS --with-pear --with-config-file-scan-dir=${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/conf.d"
 
 set +x
 
@@ -209,3 +215,5 @@ elif (test "${MINI_VERSION}" = "5.6"); then
 else
 	ln -fs /home/derick/php.default.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/php.ini
 fi
+mkdir -p ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/conf.d
+ln -fs /home/derick/zzz-xdebug.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/conf.d/zzz-xdebug.ini
