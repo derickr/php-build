@@ -71,7 +71,7 @@ if (test "${THIRTYTWO}" = "32bit"); then
 	sudo apt install -y libxml2-dev:i386 libicu-dev:i386 libz-dev:i386 libssl-dev:i386 libssl1.1:i386 libssl1.0.2:i386 libxslt1-dev:i386 libsasl2-dev:i386 libonig-dev:i386 libsqlite3-dev:i386
 	sudo apt remove -y libsqlite3-dev:amd64
 else
-	sudo apt install -y libxml2-dev libpng-dev libicu-dev libz-dev libssl-dev libssl1.1 libssl1.0.2 libxslt1-dev libsasl2-dev libonig-dev libsqlite3-dev:amd64
+	sudo apt install -y libxml2-dev libpng-dev libicu-dev libz-dev libssl-dev libssl1.1 libssl1.0.2 libxslt1-dev libsasl2-dev libonig-dev libsqlite3-dev:amd64 libgmp3-dev
 	sudo apt remove -y libsqlite3-dev:i386
 fi
 
@@ -152,6 +152,9 @@ if (test "${THIRTYTWO}" = "32bit"); then
 	if (test "${MINI_VERSION}" = "5.6"); then
 		OPTIONS="$OPTIONS --without-curl"
 	fi
+	if (test "${MINI_VERSION}" = "8.0"); then
+		OPTIONS="$OPTIONS --without-openssl"
+	fi
 else
 	OPTIONS="--with-gettext --with-gd --enable-gd --with-jpeg --with-freetype --with-jpeg-dir=/usr \
 		--with-mysql=mysqlnd --enable-bcmath --with-readline \
@@ -160,10 +163,10 @@ else
 		--enable-memory-limit --with-mcrypt --with-libxml --enable-libxml \
 		--with-iconv --enable-wddx --enable-calendar --with-sqlite3 \
 		--enable-spl --enable-pdo --with-pdo-mysql --with-pdo-sqlite \
-		--with-ctype --with-bz2 --enable-mbstring --with-mime-magic \
+		--with-ctype --with-bz2 --enable-mbstring --with-mime-magic --with-gmp \
 		--with-xmlrpc --with-zlib --disable-zend-memory-manager --with-esmtp \
 		--with-xsl --enable-exif --enable-soap --enable-ftp --enable-intl --enable-opcache\
-		--enable-fpm --enable-fileinfo"
+		--enable-fpm --enable-embed --enable-fileinfo --enable-zend-test"
 	if (test "${MINI_VERSION}" = "5.3"); then
 		export PHP_AUTOCONF=autoconf2.59
 		OPTIONS="$OPTIONS --with-openssl=/home/derick/dev/11-instana/old \
@@ -186,7 +189,16 @@ else
 		OPTIONS="$OPTIONS --disable-intl"
 	fi
 	if (test "${MINI_VERSION}" = "7.2"); then
-		OPTIONS="$OPTIONS --disable-intl"
+		OPTIONS="$OPTIONS --without-openssl --disable-intl"
+	fi
+	if (test "${MINI_VERSION}" = "7.3"); then
+		OPTIONS="$OPTIONS --without-openssl --disable-intl"
+	fi
+	if (test "${MINI_VERSION}" = "7.4"); then
+		export PKG_CONFIG_PATH="/usr/local/openssl-1.1/lib/pkgconfig"
+	fi
+	if (test "${MINI_VERSION}" = "8.0"); then
+		export PKG_CONFIG_PATH="/usr/local/openssl-1.1/lib/pkgconfig"
 	fi
 fi
 OPTIONS="$OPTIONS --with-pear --with-config-file-scan-dir=${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/conf.d"
