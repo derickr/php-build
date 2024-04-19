@@ -153,7 +153,7 @@ if (test "${THIRTYTWO}" = "32bit"); then
 		OPTIONS="$OPTIONS --without-curl"
 	fi
 	if (test "${MINI_VERSION}" = "8.0"); then
-		OPTIONS="$OPTIONS --without-openssl"
+		OPTIONS="$OPTIONS --without-openssl --disable-intl"
 	fi
 else
 	OPTIONS="--with-gettext --with-gd --enable-gd --with-jpeg --with-freetype --with-jpeg-dir=/usr \
@@ -195,9 +195,11 @@ else
 		OPTIONS="$OPTIONS --without-openssl --disable-intl"
 	fi
 	if (test "${MINI_VERSION}" = "7.4"); then
+		OPTIONS="$OPTIONS --disable-intl"
 		export PKG_CONFIG_PATH="/usr/local/openssl-1.1/lib/pkgconfig"
 	fi
 	if (test "${MINI_VERSION}" = "8.0"); then
+		OPTIONS="$OPTIONS --disable-intl"
 		export PKG_CONFIG_PATH="/usr/local/openssl-1.1/lib/pkgconfig"
 	fi
 fi
