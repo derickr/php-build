@@ -1,0 +1,16 @@
+diff --git ext/libxml/libxml.c ext/libxml/libxml.c
+index 3959b362a0e..296402c7e84 100644
+--- ext/libxml/libxml.c
++++ ext/libxml/libxml.c
+@@ -736,7 +736,11 @@ PHP_LIBXML_API void php_libxml_ctx_warning(void *ctx, const char *msg, ...)
+ 	va_end(args);
+ }
+ 
++#if LIBXML_VERSION >= 21200
++PHP_LIBXML_API void php_libxml_structured_error_handler(void *userData, const xmlError *error)
++#else
+ PHP_LIBXML_API void php_libxml_structured_error_handler(void *userData, xmlErrorPtr error)
++#endif
+ {
+ 	_php_list_set_error_structure(error, NULL);
+ 
