@@ -15,6 +15,7 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 # Setting directories
 PATCHES_DIR=$DIR/patches
 TARGET_PREFIX_DIR=/usr/local/php
+USER=`id -u -n`
 
 # If first argument is an existing directory, use it as GIT checkout directory
 if [[ -d $1 ]]; then
@@ -97,7 +98,7 @@ else
 
 		if [[ -f ${PATCHES_DIR}/${MINI_VERSION}.diff.txt ]]; then
 			echo "Patching for ${MINI_VERSION}"
-			patch -p0 < /home/derick/dev/php/build-php/patches/${MINI_VERSION}.diff.txt
+			patch -p0 < /home/${USER}/dev/php/build-php/patches/${MINI_VERSION}.diff.txt
 		fi
 	else
 		TAG=`echo ${VERSION}`
@@ -127,7 +128,7 @@ else
 
 		if [[ -f ${PATCHES_DIR}/${MINI_VERSION}.diff.txt ]]; then
 			echo "Patching for ${MINI_VERSION}"
-			patch -p0 < /home/derick/dev/php/build-php/patches/${MINI_VERSION}.diff.txt
+			patch -p0 < /home/${USER}/dev/php/build-php/patches/${MINI_VERSION}.diff.txt
 		fi
 	fi
 fi
@@ -221,16 +222,7 @@ rm -rf configure
 make
 make -j1 install
 
-if (test "${MINI_VERSION}" = "5.3"); then
-	ln -fs /home/derick/php.53.default.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/php.ini
-elif (test "${MINI_VERSION}" = "5.4"); then
-	ln -fs /home/derick/php.54.default.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/php.ini
-elif (test "${MINI_VERSION}" = "5.5"); then
-	ln -fs /home/derick/php.55.default.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/php.ini
-elif (test "${MINI_VERSION}" = "5.6"); then
-	ln -fs /home/derick/php.56.default.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/php.ini
-else
-	ln -fs /home/derick/php.default.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/php.ini
-fi
+ln -fs /home/${USER}/php.default.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/php.ini
+
 mkdir -p ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/conf.d
-ln -fs /home/derick/zzz-xdebug.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/conf.d/zzz-xdebug.ini
+ln -fs /home/${USER}/zzz-xdebug.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/conf.d/zzz-xdebug.ini
