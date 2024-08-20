@@ -1,7 +1,8 @@
 #!/bin/bash
 
 WORKSPACE=/tmp/php-build/workspace
-LOGS=${WORKSPACE}/logs
+USERID=`id -u`
+LOGS=${WORKSPACE}/logs-${USERID}
 
 mkdir -p ${LOGS}
 
@@ -36,6 +37,5 @@ VERSION=$1
 DATE=`date  +%Y-%m-%d`
 mkdir -p ${LOGS}/${DATE}
 
-# ${DIR}/build ${GIT_DIR} ${TARGET_PREFIX_DIR} ${VERSION} debug nozts 32bit >/${LOGS}/${DATE}/${VERSION}-32bit.log 2>&1
-${DIR}/build ${GIT_DIR} ${TARGET_PREFIX_DIR} ${VERSION} debug zts >/${LOGS}/${DATE}/${VERSION}-zts.log 2>&1
-${DIR}/build ${GIT_DIR} ${TARGET_PREFIX_DIR} ${VERSION} >/${LOGS}/${DATE}/${VERSION}.log 2>&1
+${DIR}/build ${GIT_DIR} ${TARGET_PREFIX_DIR} ${VERSION} debug zts >${LOGS}/${DATE}/${VERSION}-zts.log 2>&1
+${DIR}/build ${GIT_DIR} ${TARGET_PREFIX_DIR} ${VERSION} >${LOGS}/${DATE}/${VERSION}.log 2>&1
