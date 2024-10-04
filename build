@@ -168,15 +168,12 @@ else
 		OPTIONS="$OPTIONS --without-openssl --disable-intl"
 	fi
 	if (test "${MINI_VERSION}" = "7.4"); then
-		OPTIONS="$OPTIONS --disable-intl"
+		OPTIONS="$OPTIONS --disable-intl --without-openssl"
 		export PKG_CONFIG_PATH="/usr/local/openssl-1.1/lib/pkgconfig"
 	fi
 	if (test "${MINI_VERSION}" = "8.0"); then
 		OPTIONS="$OPTIONS --disable-intl"
 		export PKG_CONFIG_PATH="/usr/local/openssl-1.1/lib/pkgconfig"
-	fi
-	if (test "${MINI_VERSION}" = "7.4"); then
-		OPTIONS="$OPTIONS --disable-intl --without-openssl"
 	fi
 fi
 OPTIONS="$OPTIONS --with-pear --with-config-file-scan-dir=${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/conf.d"
