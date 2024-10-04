@@ -188,7 +188,7 @@ rm -rf configure
 
 ./configure --prefix=${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX} ${EXTRA_FLAGS} ${OPTIONS} || exit 5
 
-make
+make -j20
 make -j1 install
 
 ln -fs /home/${USER}/php.default.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/php.ini
