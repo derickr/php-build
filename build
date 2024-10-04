@@ -140,19 +140,6 @@ if (test "${THIRTYTWO}" = "32bit"); then
 		--enable-tokenizer --enable-phar --with-phar --enable-json --enable-sockets --with-sqlite3 \
 		--with-zlib --enable-filter --with-openssl --enable-hash --enable-opcache --enable-session --enable-ctype \
 		--with-libxml --enable-libxml --enable-xml --enable-dom --enable-mbstring --enable-pdo --with-pdo-sqlite --enable-xmlwriter"
-	if (test "${MINI_VERSION}" = "5.3"); then
-		export PHP_AUTOCONF=autoconf2.59
-		OPTIONS="$OPTIONS --without-curl --without-openssl"
-	fi
-	if (test "${MINI_VERSION}" = "5.4"); then
-		OPTIONS="$OPTIONS --without-curl --without-openssl"
-	fi
-	if (test "${MINI_VERSION}" = "5.5"); then
-		OPTIONS="$OPTIONS --without-curl --without-openssl"
-	fi
-	if (test "${MINI_VERSION}" = "5.6"); then
-		OPTIONS="$OPTIONS --without-curl"
-	fi
 	if (test "${MINI_VERSION}" = "8.0"); then
 		OPTIONS="$OPTIONS --without-openssl --disable-intl"
 	fi
@@ -168,21 +155,6 @@ else
 		--with-xmlrpc --with-zlib --disable-zend-memory-manager --with-esmtp \
 		--with-xsl --enable-exif --enable-soap --enable-ftp --enable-intl --enable-opcache\
 		--enable-fpm --enable-embed --enable-fileinfo --enable-zend-test"
-	if (test "${MINI_VERSION}" = "5.3"); then
-		export PHP_AUTOCONF=autoconf2.59
-		OPTIONS="$OPTIONS --with-openssl=/home/derick/dev/11-instana/old \
-			--without-xmlrpc --disable-dom --without-xsl --disable-wddx --disable-simplexml --disable-soap --without-curl \
-			--enable-xml --disable-xmlreader --disable-xmlwriter --disable-intl --without-mysqli --without-pdo-mysql"
-	fi
-	if (test "${MINI_VERSION}" = "5.4"); then
-		OPTIONS="$OPTIONS --without-curl --with-openssl=/home/derick/dev/11-instana/old --disable-intl"
-	fi
-	if (test "${MINI_VERSION}" = "5.5"); then
-		OPTIONS="$OPTIONS --without-curl --with-openssl=/home/derick/dev/11-instana/old --disable-intl"
-	fi
-	if (test "${MINI_VERSION}" = "5.6"); then
-		OPTIONS="$OPTIONS --without-curl --with-openssl=/home/derick/dev/11-instana/old --disable-intl"
-	fi
 	if (test "${MINI_VERSION}" = "7.0"); then
 		OPTIONS="$OPTIONS --disable-intl"
 	fi
