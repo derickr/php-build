@@ -191,7 +191,11 @@ rm -rf configure
 make -j20
 make -j1 install
 
-ln -fs /home/${USER}/php.default.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/php.ini
+if [ -f /home/${USER}/php.default.${VERSION}.ini ]; then
+	ln -fs /home/${USER}/php.default.${VERSION}.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/php.ini
+else
+	ln -fs /home/${USER}/php.default.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/php.ini
+fi
 
 mkdir -p ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/conf.d
 ln -fs /home/${USER}/zzz-xdebug.ini ${TARGET_PREFIX_DIR}/${VERSION}${POSTFIX}/lib/conf.d/zzz-xdebug.ini
