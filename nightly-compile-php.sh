@@ -23,7 +23,7 @@ mkdir -p ${LOGS}/${DATE}
 
 date
 echo Start
-for i in 8.0dev 8.1dev 8.2dev 8.3dev 8.4dev master; do
+for i in 8.0dev 8.1dev 8.2dev 8.3dev 8.4dev 8.5dev master; do
 	GIT_DIR=${TREES}/nightly-${i}
 	TARGET_DIR=${INSTALL_DIR}
 
